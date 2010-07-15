@@ -1,0 +1,368 @@
+
+# This file is part of the dinGeoPlugin package.
+# (c) DineCat, 2010 http://dinecat.com/
+#
+# For the full copyright and license information, please view the LICENSE file,
+# that was distributed with this package, or see http://www.dinecat.com/din/license.html
+
+# Plugin schema file for Doctrine
+#
+# @package     dinGeoPlugin
+# @subpackage  config.doctrine
+# @author      Nicolay N. Zyk <relo.san@gmail.com>
+
+#DinGeoCountry
+DinGeoCountry:
+
+    actAs:
+        I18n:
+            fields:         ['title', 'uri', 'description']
+            unique:         ['uri']
+        Geographical:       []
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        showing_level:      { type: 'integer(1)', notnull: true, default: '0' }
+        alpha2_code:        { type: 'string(2)', fixed: true }
+        alpha3_code:        { type: 'string(3)', fixed: true }
+        numeric_code:       { type: 'string(3)', fixed: true }
+        pref_culture:       { type: 'string(2)', fixed: true }
+        title:              { type: 'string(100)', fixed: true }
+        uri:                { type: 'string(50)', fixed: true }
+        description:        { type: 'clob(65532)' }
+        distance:           { type: 'integer(4)' }
+        sequence:           { type: 'integer(4)' }
+
+    indexes:
+        showing:            { fields: ['showing_level'] }
+        uri:                { fields: ['uri'], type: 'unique' }
+        alpha2:             { fields: ['alpha2_code'], type: 'unique' }
+        alpha3:             { fields: ['alpha3_code'], type: 'unique' }
+        numeric:            { fields: ['numeric_code'], type: 'unique' }
+
+
+#DinGeoRegion
+DinGeoRegion:
+
+    actAs:
+        I18n:
+            fields:         ['title', 'uri', 'description']
+            unique:         ['uri']
+        Geographical:       []
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        country_id:         { type: 'integer(4)', notnull: true }
+        type_id:            { type: 'integer(4)', notnull: true, default: '1' }
+        title:              { type: 'string(100)', fixed: true }
+        uri:                { type: 'string(50)', fixed: true }
+        description:        { type: 'clob(65532)' }
+        distance:           { type: 'integer(4)' }
+        sequence:           { type: 'integer(4)' }
+
+    indexes:
+        uri:                { fields: ['uri'], type: 'unique' }
+
+    relations:
+        DinGeoCountry:
+            local:          'country_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'Country'
+            foreignAlias:   'Regions'
+            onDelete:       'CASCADE'
+
+
+#DinGeoDistrict
+DinGeoDistrict:
+
+    actAs:
+        I18n:
+            fields:         ['title', 'uri', 'description']
+            unique:         ['uri']
+        Geographical:       []
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        region_id:          { type: 'integer(4)', notnull: true }
+        type_id:            { type: 'integer(4)', notnull: true, default: '1' }
+        title:              { type: 'string(100)', fixed: true }
+        uri:                { type: 'string(50)', fixed: true }
+        description:        { type: 'clob(65532)' }
+        distance:           { type: 'integer(4)' }
+        sequence:           { type: 'integer(4)' }
+
+    indexes:
+        uri:                { fields: ['uri'], type: 'unique' }
+
+    relations:
+        DinGeoRegion:
+            local:          'region_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'Region'
+            foreignAlias:   'Districts'
+            onDelete:       'CASCADE'
+
+
+#DinGeoCity
+DinGeoCity:
+
+    actAs:
+        I18n:
+            fields:         ['title', 'uri', 'description']
+            unique:         ['uri']
+        Geographical:       []
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        district_id:        { type: 'integer(4)', notnull: true }
+        type_id:            { type: 'integer(4)', notnull: true, default: '1' }
+        title:              { type: 'string(100)', fixed: true }
+        uri:                { type: 'string(50)', fixed: true }
+        description:        { type: 'clob(65532)' }
+        distance:           { type: 'integer(4)' }
+        sequence:           { type: 'integer(4)' }
+
+    indexes:
+        uri:                { fields: ['uri'], type: 'unique' }
+
+    relations:
+        DinGeoDistrict:
+            local:          'district_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'District'
+            foreignAlias:   'Cities'
+            onDelete:       'CASCADE'
+
+
+#DinGeoNeighbourhood
+DinGeoNeighbourhood:
+
+    actAs:
+        I18n:
+            fields:         ['title', 'uri', 'description']
+            unique:         ['uri']
+        Geographical:       []
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        city_id:            { type: 'integer(4)', notnull: true }
+        type_id:            { type: 'integer(4)', notnull: true, default: '1' }
+        title:              { type: 'string(100)', fixed: true }
+        uri:                { type: 'string(50)', fixed: true }
+        description:        { type: 'clob(65532)' }
+        distance:           { type: 'integer(4)' }
+        sequence:           { type: 'integer(4)' }
+
+    indexes:
+        uri:                { fields: ['uri'], type: 'unique' }
+
+    relations:
+        DinGeoCity:
+            local:          'city_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'City'
+            foreignAlias:   'Neighbourhoods'
+            onDelete:       'CASCADE'
+        DinGeoStreets:
+            class:          'DinGeoStreet'
+            refClass:       'DinGeoNeighbourhoodBindStreet'
+            local:          'neighbourhood_id'
+            foreign:        'street_id'
+            alias:          'Streets'
+            foreignAlias:   'Neighbourhoods'
+
+
+#DinGeoStreet
+DinGeoStreet:
+
+    actAs:
+        I18n:
+            fields:         ['title', 'uri', 'description']
+            unique:         ['uri']
+        Geographical:       []
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        city_id:            { type: 'integer(4)', notnull: true }
+        type_id:            { type: 'integer(4)', notnull: true, default: '1' }
+        title:              { type: 'string(100)', fixed: true }
+        uri:                { type: 'string(50)', fixed: true }
+        description:        { type: 'clob(65532)' }
+        distance:           { type: 'integer(4)' }
+        sequence:           { type: 'integer(4)' }
+
+    indexes:
+        uri:                { fields: ['uri'], type: 'unique' }
+
+    relations:
+        DinGeoCity:
+            local:          'city_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'City'
+            foreignAlias:   'Streets'
+            onDelete:       'CASCADE'
+        DinGeoPostcodes:
+            class:          'DinGeoPostcode'
+            refClass:       'DinGeoStreetBindPostcode'
+            local:          'street_id'
+            foreign:        'postcode_id'
+            alias:          'Postcodes'
+            foreignAlias:   'Streets'
+        DinGeoStreets:
+            class:          'DinGeoStreet'
+            refClass:       'DinGeoNeighbourhoodBindStreet'
+            local:          'street_id'
+            foreign:        'neighbourhood_id'
+            alias:          'Neighbourhoods'
+            foreignAlias:   'Streets'
+
+
+#DinGeoPostcode
+DinGeoPostcode:
+
+    actAs:
+        Geographical:       []
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        city_id:            { type: 'integer(4)', notnull: true }
+        title:              { type: 'string(8)', fixed: true, notnull: true }
+        uri:                { type: 'string(8)', fixed: true }
+
+    indexes:
+        uri:                { fields: ['uri'], type: 'unique' }
+
+    relations:
+        DinGeoCity:
+            local:          'city_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'City'
+            foreignAlias:   'Postcodes'
+            onDelete:       'CASCADE'
+        DinGeoStreets:
+            class:          'DinGeoStreet'
+            refClass:       'DinGeoNeighbourhoodBindStreet'
+            local:          'postcode_id'
+            foreign:        'street_id'
+            alias:          'Streets'
+            foreignAlias:   'Postcodes'
+
+
+#DinGeoNeighbourhoodBindStreet
+DinGeoNeighbourhoodBindStreet:
+
+    columns:
+        neighbourhood_id:   { type: 'integer(4)', primary: true }
+        street_id:          { type: 'integer(4)', primary: true }
+
+    relations:
+        DinGeoNeighbourhood:
+            local:          'neighbourhood_id'
+            foreign:        'id'
+            alias:          'Neighbourhood'
+            foreignAlias:   'Streets'
+            onDelete:       'CASCADE'
+        DinGeoStreet:
+            local:          'street_id'
+            foreign:        'id'
+            alias:          'Street'
+            foreignAlias:   'Neighbourhoods'
+            onDelete:       'CASCADE'
+
+
+#DinGeoStreetBindPostcode
+DinGeoStreetBindPostcode:
+
+    columns:
+        street_id:          { type: 'integer(4)', primary: true }
+        postcode_id:        { type: 'integer(4)', primary: true }
+
+    relations:
+        DinGeoStreet:
+            local:          'street_id'
+            foreign:        'id'
+            alias:          'Street'
+            foreignAlias:   'Postcodes'
+            onDelete:       'CASCADE'
+        DinGeoPostcode:
+            local:          'postcode_id'
+            foreign:        'id'
+            alias:          'Postcode'
+            foreignAlias:   'Streets'
+            onDelete:       'CASCADE'
+
+
+#DinGeoInfrastructureType
+DinGeoInfrastructureType:
+
+    actAs:
+        I18n:
+            fields:         ['title', 'uri', 'description']
+            unique:         ['uri']
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        is_enabled:         { type: 'boolean', notnull: true, default: true }
+        title:              { type: 'string(100)', fixed: true }
+        uri:                { type: 'string(50)', fixed: true }
+        description:        { type: 'clob(65532)' }
+        sequence:           { type: 'integer(4)' }
+
+    indexes:
+        uri:                { fields: ['uri'], type: 'unique' }
+
+
+#DinGeoInfrastructure
+DinGeoInfrastructure:
+
+    actAs:
+        I18n:
+            fields:         ['title', 'uri', 'description']
+            unique:         ['uri']
+        Geographical:       []
+
+    columns:
+        id:                 { type: 'integer(4)', primary: true, autoincrement: true }
+        district_id:        { type: 'integer(4)', notnull: true }
+        type_id:            { type: 'integer(4)', notnull: true }
+        is_public:          { type: 'boolean', notnull: true, default: true }
+        created_at:         { type: 'timestamp' }
+        title:              { type: 'string(150)', fixed: true }
+        uri:                { type: 'string(50)', fixed: true }
+        description:        { type: 'clob(65532)' }
+        distance:           { type: 'integer(4)' }
+
+    indexes:
+        uri:                { fields: ['uri'], type: 'unique' }
+
+    relations:
+        DinGeoCity:
+            local:          'city_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'City'
+            foreignAlias:   'Infrastructure'
+            onDelete:       'CASCADE'
+        DinGeoInfrastructureType:
+            local:          'type_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'Type'
+            foreignAlias:   'Infrastructure'
+            onDelete:       'CASCADE'
+
+#EOF
