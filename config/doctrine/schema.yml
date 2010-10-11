@@ -23,12 +23,12 @@ DinGeoCountry:
     columns:
         id:                 { type: 'integer(4)', primary: true, autoincrement: true }
         showing_level:      { type: 'integer(1)', notnull: true, default: '0' }
-        alpha2_code:        { type: 'string(2)', fixed: true }
-        alpha3_code:        { type: 'string(3)', fixed: true }
-        numeric_code:       { type: 'string(3)', fixed: true }
-        pref_culture:       { type: 'string(2)', fixed: true }
-        title:              { type: 'string(100)', fixed: true }
-        uri:                { type: 'string(50)', fixed: true }
+        alpha2_code:        { type: 'string(2)' }
+        alpha3_code:        { type: 'string(3)' }
+        numeric_code:       { type: 'string(3)' }
+        pref_culture:       { type: 'string(2)' }
+        title:              { type: 'string(100)' }
+        uri:                { type: 'string(50)' }
         description:        { type: 'clob(65532)' }
         distance:           { type: 'integer(4)' }
         sequence:           { type: 'integer(4)' }
@@ -54,8 +54,8 @@ DinGeoRegion:
         id:                 { type: 'integer(4)', primary: true, autoincrement: true }
         country_id:         { type: 'integer(4)', notnull: true }
         type_id:            { type: 'integer(4)', notnull: true, default: '1' }
-        title:              { type: 'string(100)', fixed: true }
-        uri:                { type: 'string(50)', fixed: true }
+        title:              { type: 'string(100)' }
+        uri:                { type: 'string(50)' }
         description:        { type: 'clob(65532)' }
         distance:           { type: 'integer(4)' }
         sequence:           { type: 'integer(4)' }
@@ -87,8 +87,8 @@ DinGeoDistrict:
         id:                 { type: 'integer(4)', primary: true, autoincrement: true }
         region_id:          { type: 'integer(4)', notnull: true }
         type_id:            { type: 'integer(4)', notnull: true, default: '1' }
-        title:              { type: 'string(100)', fixed: true }
-        uri:                { type: 'string(50)', fixed: true }
+        title:              { type: 'string(100)' }
+        uri:                { type: 'string(50)' }
         description:        { type: 'clob(65532)' }
         distance:           { type: 'integer(4)' }
         sequence:           { type: 'integer(4)' }
@@ -118,10 +118,12 @@ DinGeoCity:
 
     columns:
         id:                 { type: 'integer(4)', primary: true, autoincrement: true }
-        district_id:        { type: 'integer(4)', notnull: true }
+        country_id:         { type: 'integer(4)' }
+        region_id:          { type: 'integer(4)' }
+        district_id:        { type: 'integer(4)' }
         type_id:            { type: 'integer(4)', notnull: true, default: '1' }
-        title:              { type: 'string(100)', fixed: true }
-        uri:                { type: 'string(50)', fixed: true }
+        title:              { type: 'string(100)' }
+        uri:                { type: 'string(50)' }
         description:        { type: 'clob(65532)' }
         distance:           { type: 'integer(4)' }
         sequence:           { type: 'integer(4)' }
@@ -130,6 +132,22 @@ DinGeoCity:
         uri:                { fields: ['uri'], type: 'unique' }
 
     relations:
+        DinGeoCountry:
+            local:          'country_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'Country'
+            foreignAlias:   'Cities'
+            onDelete:       'CASCADE'
+        DinGeoRegion:
+            local:          'region_id'
+            foreign:        'id'
+            type:           'one'
+            foreignType:    'many'
+            alias:          'Region'
+            foreignAlias:   'Cities'
+            onDelete:       'CASCADE'
         DinGeoDistrict:
             local:          'district_id'
             foreign:        'id'
@@ -153,8 +171,8 @@ DinGeoNeighbourhood:
         id:                 { type: 'integer(4)', primary: true, autoincrement: true }
         city_id:            { type: 'integer(4)', notnull: true }
         type_id:            { type: 'integer(4)', notnull: true, default: '1' }
-        title:              { type: 'string(100)', fixed: true }
-        uri:                { type: 'string(50)', fixed: true }
+        title:              { type: 'string(100)' }
+        uri:                { type: 'string(50)' }
         description:        { type: 'clob(65532)' }
         distance:           { type: 'integer(4)' }
         sequence:           { type: 'integer(4)' }
@@ -193,8 +211,8 @@ DinGeoStreet:
         id:                 { type: 'integer(4)', primary: true, autoincrement: true }
         city_id:            { type: 'integer(4)', notnull: true }
         type_id:            { type: 'integer(4)', notnull: true, default: '1' }
-        title:              { type: 'string(100)', fixed: true }
-        uri:                { type: 'string(50)', fixed: true }
+        title:              { type: 'string(100)' }
+        uri:                { type: 'string(50)' }
         description:        { type: 'clob(65532)' }
         distance:           { type: 'integer(4)' }
         sequence:           { type: 'integer(4)' }
@@ -236,8 +254,8 @@ DinGeoPostcode:
     columns:
         id:                 { type: 'integer(4)', primary: true, autoincrement: true }
         city_id:            { type: 'integer(4)', notnull: true }
-        title:              { type: 'string(8)', fixed: true, notnull: true }
-        uri:                { type: 'string(8)', fixed: true }
+        title:              { type: 'string(8)', notnull: true }
+        uri:                { type: 'string(8)' }
 
     indexes:
         uri:                { fields: ['uri'], type: 'unique' }
@@ -315,8 +333,8 @@ DinGeoInfrastructureType:
     columns:
         id:                 { type: 'integer(4)', primary: true, autoincrement: true }
         is_enabled:         { type: 'boolean', notnull: true, default: true }
-        title:              { type: 'string(100)', fixed: true }
-        uri:                { type: 'string(50)', fixed: true }
+        title:              { type: 'string(100)' }
+        uri:                { type: 'string(50)' }
         description:        { type: 'clob(65532)' }
         sequence:           { type: 'integer(4)' }
 
@@ -339,8 +357,8 @@ DinGeoInfrastructure:
         type_id:            { type: 'integer(4)', notnull: true }
         is_public:          { type: 'boolean', notnull: true, default: true }
         created_at:         { type: 'timestamp' }
-        title:              { type: 'string(150)', fixed: true }
-        uri:                { type: 'string(50)', fixed: true }
+        title:              { type: 'string(150)' }
+        uri:                { type: 'string(50)' }
         description:        { type: 'clob(65532)' }
         distance:           { type: 'integer(4)' }
 
